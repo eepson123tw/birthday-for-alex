@@ -172,6 +172,7 @@ function Track({
   width = 0.01,
   height = 0.05,
   obj = new THREE.Object3D(),
+  trackHeight,
   ...props
 }) {
   const ref = useRef()
@@ -191,14 +192,18 @@ function Track({
     for (let i = 0; i < data.length; i++) {
       obj.position.set(
         i * width * space - (data.length * width * space) / 2,
-        (data[i] / y) * 5,
+        (data[i] / y) * trackHeight,
         0
       )
       obj.updateMatrix()
       ref.current.setMatrixAt(i, obj.matrix)
     }
     // Set the hue according to the frequency average
-    ref.current.material.color.setHSL(avg / 500, 1, 1)
+    ref.current.material.color.setHSL(
+      avg / 500,
+      (1 / Math.random()) * 5,
+      (1 / Math.random()) * 10
+    )
     ref.current.instanceMatrix.needsUpdate = true
   })
   return (
@@ -263,20 +268,25 @@ function Frame({
   children,
   ...props
 }) {
+  const color = new THREE.Color()
+  const ref = useRef(null)
+  const track = [
+    { y: -0.6, trackHeight: 0.5 },
+    { y: -0.7, trackHeight: 1 },
+    { y: -0.8, trackHeight: 2 },
+    { y: -0.9, trackHeight: 4 },
+    { y: -1, trackHeight: 6 },
+    { y: -1.1, trackHeight: 8 },
+    { y: -1.2, trackHeight: 10 }
+  ]
   const [timer, setImgTimer] = useState(0)
+  const [hovered, setHovered] = useState(false)
+  const [hasClicked, setClicked] = useState(false)
+
   useFrame((state, delta, xrFrame) => {
     const time = state.clock.getElapsedTime() / 3
     setImgTimer(Math.floor(time % 10))
   })
-  const color = new THREE.Color()
-  const [hovered, setHovered] = useState(false)
-  const ref = useRef(null)
-  const [hasClicked, setClicked] = useState(false)
-  useEffect(() => {
-    if (hovered) document.body.style.cursor = 'pointer'
-    return () => (document.body.style.cursor = 'auto')
-  }, [hovered])
-
   useFrame(({ camera }) => {
     ref.current.quaternion.copy(camera.quaternion)
     ref.current.material.color.lerp(
@@ -285,8 +295,14 @@ function Frame({
     )
   })
 
+  useEffect(() => {
+    if (hovered) document.body.style.cursor = 'pointer'
+    return () => (document.body.style.cursor = 'auto')
+  }, [hovered])
+
   const over = (e) => (e.stopPropagation(), setHovered(true))
   const out = () => setHovered(false)
+
   return (
     <group {...props}>
       <Text
@@ -326,16 +342,19 @@ function Frame({
         {author}
       </Text>
       <Suspense fallback={null}>
-        {hasClicked && (
-          <Track
-            position-z={1}
-            position-y={-0.8}
-            height={0.01}
-            width={0.02}
-            space={2}
-            url='/music.mp3'
-          />
-        )}
+        {hasClicked &&
+          track.map((item, i) => (
+            <Track
+              key={i}
+              position-z={1}
+              position-y={item.y}
+              height={0.01}
+              width={0.02}
+              space={2}
+              url='/music.mp3'
+              trackHeight={item.trackHeight}
+            />
+          ))}
       </Suspense>
       <mesh name={id}>
         <roundedPlaneGeometry args={[width, height, 0.1]} />
