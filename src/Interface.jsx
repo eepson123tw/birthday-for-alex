@@ -5,7 +5,7 @@ import { addEffect } from '@react-three/fiber'
 import { playAudio } from './utils/playAudio.js'
 export default function Interface() {
   const time = useRef()
-  const [showTime, setShowTime] = useState(false)
+  const [showTime, setShowTime] = useState(true)
 
   const restart = useGame((state) => state.restart)
   const phase = useGame((state) => state.phase)
