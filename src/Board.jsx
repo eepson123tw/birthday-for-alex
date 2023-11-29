@@ -33,9 +33,13 @@ import img10 from '../public/10.png'
 
 export function BlockArea({ position = [0, 0, 0] }) {
   const [timer, setImgTimer] = useState(0)
+  const cameraControlRef = useRef(null)
   useFrame((state, delta, xrFrame) => {
     const time = state.clock.getElapsedTime() / 3
     setImgTimer(Math.floor(time % 10))
+  })
+  useEffect(() => {
+    console.log(cameraControlRef.current)
   })
   return (
     <group position={position}>
@@ -110,18 +114,12 @@ export function BlockArea({ position = [0, 0, 0] }) {
           rotation={[-0.45, 0, 0]}
           scale={1.5}
         >
+          <CameraControls makeDefault ref={cameraControlRef} />
           <Sky />
           <Suspense fallback={null}>
             <Image />
           </Suspense>
         </Frame>
-        <CameraControls
-          makeDefault
-          minAzimuthAngle={-Math.PI / 2.5}
-          maxAzimuthAngle={Math.PI / 2.5}
-          minPolarAngle={0.5}
-          maxPolarAngle={Math.PI / 2}
-        />
       </RigidBody>
     </group>
   )
@@ -250,7 +248,7 @@ function Image() {
     setImgIndex(Math.floor(time % 10))
   })
   return (
-    <mesh>
+    <mesh rotation={[0.8, 0, 0]}>
       <planeGeometry attach='geometry' args={[1.8, 2]} />
       <meshBasicMaterial ref={ref} attach='material' map={data[imgIndex]} />
     </mesh>
