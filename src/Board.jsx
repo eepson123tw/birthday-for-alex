@@ -200,9 +200,9 @@ function Track({
     }
     // Set the hue according to the frequency average
     ref.current.material.color.setHSL(
-      avg / 500,
-      (1 / Math.random()) * 5,
-      (1 / Math.random()) * 10
+      (Math.random() * avg) / 20, // 随机色相: 0 到 1 之间
+      0.85, // 随机饱和度: 0 到 1 之间
+      0.6 // 随机亮度: 0 到 1 之间
     )
     ref.current.instanceMatrix.needsUpdate = true
   })
@@ -271,13 +271,13 @@ function Frame({
   const color = new THREE.Color()
   const ref = useRef(null)
   const track = [
-    { y: -0.6, trackHeight: 0.5 },
-    { y: -0.7, trackHeight: 1 },
-    { y: -0.8, trackHeight: 2 },
-    { y: -0.9, trackHeight: 4 },
-    { y: -1, trackHeight: 6 },
-    { y: -1.1, trackHeight: 8 },
-    { y: -1.2, trackHeight: 10 }
+    { y: -0.6, trackHeight: 2.75 },
+    { y: -0.7, trackHeight: 2.5 },
+    { y: -0.8, trackHeight: 2.25 },
+    { y: -0.9, trackHeight: 2 },
+    { y: -1, trackHeight: 1.75 },
+    { y: -1.1, trackHeight: 1.5 },
+    { y: -1.2, trackHeight: 1.25 }
   ]
   const [timer, setImgTimer] = useState(0)
   const [hovered, setHovered] = useState(false)
